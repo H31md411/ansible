@@ -1,0 +1,45 @@
+---
+- name: Check and renew SSL certificate if needed
+  hosts: webserver
+  become: yes
+
+  vars:
+    domain: "homelab.lan"
+
+  tasks:
+    - name: Get the hostname of the server
+      setup:
+        filter: ansible_hostname
+      register: hostname
+
+    - name: Set the hostname as domain_name
+      set_fact:
+        domain_name: "{{ hostname.ansible_facts.ansible_hostname }}.{{ domain }}"
+
+    - name: Check the SSL certificate validity
+      command: "openssl x509 -checkend $((2 * 24 * 3600)) -noout -in /etc/ssl/certs/{{ domain_name }}.crt"
+      register: cert_validity
+      ignore_errors: yes
+
+    - name: Renew SSL certificate if it's expiring soon
+      command: "openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/{{ domain_name }}.key -out /etc/ssl/certs/{{ domain_name }}.crt -days 365 -nodes -subj '/CN={{ domain_name }}'"
+      when: cert_validity.rc != 0  # Certificate is expiring soon
+
+    - name: Configure Nginx to use the updated SSL certificate
+      blockinfile:
+        path: "/etc/nginx/sites-available/default"  # Path to nginx-Config
+        block: |
+          server {
+              listen 443 ssl;
+              server_name {{ domain_name }};
+
+              ssl_certificate /etc/ssl/certs/{{ domain_name }}.crt;
+              ssl_certificate_key /etc/ssl/private/{{ domain_name }}.key;
+
+              # ... Weitere SSL- und Serverkonfigurationen ...
+          }
+
+    - name: Reload Nginx to apply the SSL configuration
+      systemd:
+        name: "nginx"  # service name for nginx-service
+        state: restarted
