@@ -5,8 +5,8 @@
 
   vars:
     webserver_process_name: "nginx"  # oder "apache2", je nachdem welchen Webserver Sie verwenden
-    certbot_package: "certbot-nginx"  # oder "certbot-nginx", je nachdem welchen Webserver Sie verwenden
-    certbot_plugin: "nginx"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
+    certbot_package: "certbot"  # oder "certbot-nginx", je nachdem welchen Webserver Sie verwenden
+    certbot_plugin: "webroot"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
     domain_name: "homelab.lan"  # Ihre Domain, für die das Zertifikat erstellt werden soll
     email: "marcel@graewer.com"  # Ihre E-Mail-Adresse für Let's Encrypt-Benachrichtigungen
     webserver_service_name: "nginx"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
