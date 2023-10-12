@@ -18,7 +18,7 @@
 
     - name: Configure Nginx to use the self-signed SSL certificate
       blockinfile:
-        path: "/etc/nginx/sites-available/default"  # Ändern Sie den Pfad je nach Nginx-Konfiguration
+        path: "/etc/nginx/sites-available/default"  # Path to nginx-Config
         block: |
           server {
               listen 443 ssl;
@@ -32,5 +32,5 @@
 
     - name: Reload Nginx to apply the SSL configuration
       systemd:
-        name: "nginx"  # Ändern Sie den Dienstnamen je nach Nginx-Konfiguration
+        name: "nginx"  # service name for nginx-service
         state: restarted
