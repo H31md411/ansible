@@ -1,6 +1,6 @@
 ---
 - name: Get SSL certificate expiry date
-  hosts: ubuntu
+  #hosts: ubuntu
   become: yes
 
   vars:
