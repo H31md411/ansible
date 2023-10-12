@@ -3,6 +3,9 @@
   hosts: webserver
   become: yes
 
+  vars:
+    domain: "wululu.lan"
+
   tasks:
     - name: Get the hostname of the server
       setup:
@@ -11,7 +14,6 @@
 
     - name: Set the hostname as domain_name
       set_fact:
-        domain: "wululu.lan"
         domain_name: "{{ hostname.ansible_facts.ansible_hostname }}.{{ domain }}"
 
     - name: Generate a self-signed SSL certificate
