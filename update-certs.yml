@@ -21,7 +21,7 @@
         current_time: "{{ ansible_date_time.epoch | int }}"
 
     - name: Get the SSL certificate expiry time
-      command: "openssl x509 -enddate -noout -in /etc/ssl/certs/{{ domain_name }}.crt | cut -d'=' -f2-"
+      shell: "openssl x509 -enddate -noout -in /etc/ssl/certs/{{ domain_name }}.crt | cut -d'=' -f2-"
       register: cert_end_date
 
     - name: Calculate the Unix timestamp for SSL certificate expiry
