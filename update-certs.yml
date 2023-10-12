@@ -1,5 +1,5 @@
 ---
-- name: Check and renew SSL certificate if needed
+- name: Generate and install self-signed SSL certificate for Nginx
   hosts: webserver
   become: yes
 
