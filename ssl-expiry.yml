@@ -1,0 +1,26 @@
+---
+- name: Get SSL certificate expiry date
+  hosts: webserver
+  become: yes
+
+  vars:
+    domain: "homelab.lan"
+
+  tasks:
+    - name: Get the hostname of the server
+      setup:
+        filter: ansible_hostname
+      register: hostname
+
+    - name: Set the hostname as domain_name
+      set_fact:
+        domain_name: "{{ hostname.ansible_facts.ansible_hostname }}.{{ domain }}"
+
+    - name: Check the SSL certificate validity
+      command: "openssl x509 -enddate -noout -in /etc/ssl/certs/{{ domain_name }}.crt"
+      register: cert_end_date
+
+    - name: Display SSL certificate expiry date
+      debug:
+        msg: "SSL certificate for {{ domain_name }} expires on {{ cert_end_date.stdout | trim | regex_replace('(notAfter=)','') }}"
+

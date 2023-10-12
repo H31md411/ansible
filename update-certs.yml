@@ -44,8 +44,6 @@
 
               ssl_certificate /etc/ssl/certs/{{ domain_name }}.crt;
               ssl_certificate_key /etc/ssl/private/{{ domain_name }}.key;
-
-              # ... Weitere SSL- und Serverkonfigurationen ...
           }
       when: cert_renew_result.changed
 
