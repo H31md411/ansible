@@ -1,35 +1,36 @@
 ---
-- name: Check if web server is running and configure SSL
-  hosts: webserver
+- name: Generate and install self-signed SSL certificate for Nginx
+  hosts: your_nginx_server
   become: yes
 
-  vars:
-    webserver_process_name: "nginx"  # oder "apache2", je nachdem welchen Webserver Sie verwenden
-    certbot_package: "certbot"  # oder "certbot-nginx", je nachdem welchen Webserver Sie verwenden
-    certbot_plugin: "webroot"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
-    domain_name: "graewer.com"  # Ihre Domain, für die das Zertifikat erstellt werden soll
-    email: "marcel@graewer.com"  # Ihre E-Mail-Adresse für Let's Encrypt-Benachrichtigungen
-    webserver_service_name: "nginx"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
-
   tasks:
-    - name: Check if the web server is running
-      shell: "ps aux | grep '{{ webserver_process_name }}'"
-      register: webserver_status
-      ignore_errors: yes
+    - name: Get the hostname of the server
+      setup:
+        filter: ansible_hostname
+      register: hostname
 
-    - name: Install certbot package for the web server
-      apt:
-        name: "{{ certbot_package }}"
-        state: present
-      when: webserver_status.rc == 0
+    - name: Set the hostname as domain_name
+      set_fact:
+        domain_name: "{{ hostname.ansible_facts.ansible_hostname }}"
 
-    - name: Create Let's Encrypt SSL certificate
-      command: "certbot certonly --{{ certbot_plugin }} -d {{ domain_name }} --agree-tos --email {{ email }} --non-interactive"
-      ignore_errors: yes
-      when: webserver_status.rc == 0
+    - name: Generate a self-signed SSL certificate
+      command: "openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/{{ domain_name }}.key -out /etc/ssl/certs/{{ domain_name }}.crt -days 365 -nodes -subj '/CN={{ domain_name }}'"
 
-    - name: Reload the web server to apply the SSL certificate
+    - name: Configure Nginx to use the self-signed SSL certificate
+      blockinfile:
+        path: "/etc/nginx/sites-available/default"  # Ändern Sie den Pfad je nach Nginx-Konfiguration
+        block: |
+          server {
+              listen 443 ssl;
+              server_name {{ domain_name }};
+
+              ssl_certificate /etc/ssl/certs/{{ domain_name }}.crt;
+              ssl_certificate_key /etc/ssl/private/{{ domain_name }}.key;
+
+              # ... Weitere SSL- und Serverkonfigurationen ...
+          }
+
+    - name: Reload Nginx to apply the SSL configuration
       systemd:
-        name: "{{ webserver_service_name }}"
+        name: "nginx"  # Ändern Sie den Dienstnamen je nach Nginx-Konfiguration
         state: restarted
-      when: webserver_status.rc == 0
