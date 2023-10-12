@@ -11,7 +11,7 @@
 
     - name: Set the hostname as domain_name
       set_fact:
-        domain_name: "{{ hostname.ansible_facts.ansible_hostname }}"
+        domain_name: "{{ hostname.ansible_facts.ansible_hostname }}.homelab.lan"
 
     - name: Generate a self-signed SSL certificate
       command: "openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/{{ domain_name }}.key -out /etc/ssl/certs/{{ domain_name }}.crt -days 365 -nodes -subj '/CN={{ domain_name }}'"
