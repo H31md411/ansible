@@ -13,7 +13,7 @@
 
   tasks:
     - name: Check if the web server is running
-      shell: "ps aux | grep -v grep | grep '{{ webserver_process_name }}'"
+      shell: "ps aux | grep '{{ webserver_process_name }}'"
       register: webserver_status
       ignore_errors: yes
 
