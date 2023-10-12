@@ -7,7 +7,7 @@
     webserver_process_name: "nginx"  # oder "apache2", je nachdem welchen Webserver Sie verwenden
     certbot_package: "certbot"  # oder "certbot-nginx", je nachdem welchen Webserver Sie verwenden
     certbot_plugin: "webroot"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
-    domain_name: "homelab.lan"  # Ihre Domain, für die das Zertifikat erstellt werden soll
+    domain_name: "graewer.com"  # Ihre Domain, für die das Zertifikat erstellt werden soll
     email: "marcel@graewer.com"  # Ihre E-Mail-Adresse für Let's Encrypt-Benachrichtigungen
     webserver_service_name: "nginx"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
 
@@ -24,7 +24,7 @@
       when: webserver_status.rc == 0
 
     - name: Create Let's Encrypt SSL certificate
-      command: "certbot certonly --{{ certbot_plugin }} -d {{ domain_name }} --agree-tos --email {{ email }}"
+      command: "certbot certonly --{{ certbot_plugin }} -d {{ domain_name }} --agree-tos --email {{ email }} --non-interactive"
       ignore_errors: yes
       when: webserver_status.rc == 0
 
