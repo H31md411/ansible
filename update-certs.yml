@@ -5,7 +5,6 @@
 
   vars:
     domain: "homelab.lan"
-    cert_renewed: false
 
   tasks:
     - name: Get the hostname of the server
@@ -18,16 +17,20 @@
         domain_name: "{{ hostname.ansible_facts.ansible_hostname }}.{{ domain }}"
 
     - name: Check the SSL certificate validity
-      command: "date -d \"$(openssl x509 -enddate -noout -in /etc/ssl/certs/{{ domain_name }}.crt | cut -d'=' -f2-)\" +%s"
+      set_fact:
+        current_time: "{{ ansible_date_time.epoch | int }}"
+
+    - name: Get the SSL certificate expiry time
+      command: "openssl x509 -enddate -noout -in /etc/ssl/certs/{{ domain_name }}.crt | cut -d'=' -f2-"
       register: cert_end_date
 
-    - name: Calculate the Unix timestamp for 2 weeks in the future
+    - name: Calculate the Unix timestamp for SSL certificate expiry
       set_fact:
-        two_weeks_future: "{{ ansible_date_time.epoch | int + (2 * 7 * 24 * 3600) }}"
+        cert_expiry_time: "{{ cert_end_date.stdout | trim | to_datetime('%b %d %H:%M:%S %Y %Z') | to_unixtime }}"
 
     - name: Renew SSL certificate if it's expiring soon
       command: "openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/{{ domain_name }}.key -out /etc/ssl/certs/{{ domain_name }}.crt -days 365 -nodes -subj '/CN={{ domain_name }}'"
-      when: cert_end_date.stdout | int < two_weeks_future
+      when: cert_expiry_time | int < current_time + (2 * 7 * 24 * 3600)  # Renew if less than 2 weeks left
       register: cert_renew_result
       changed_when: cert_renew_result.stdout.find('not creating new certificate') == -1
 
