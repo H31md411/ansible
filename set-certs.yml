@@ -4,7 +4,7 @@
   become: yes
 
   vars:
-    domain: "wululu.lan"
+    domain: "homelab.lan"
 
   tasks:
     - name: Get the hostname of the server
