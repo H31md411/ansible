@@ -1,5 +1,4 @@
----
-- name: Get SSL certificate expiry date
+- name: Get SSL certificate expiry date in CEST
   hosts: webserver
   become: yes
 
@@ -20,7 +19,10 @@
       command: "openssl x509 -enddate -noout -in /etc/ssl/certs/{{ domain_name }}.crt"
       register: cert_end_date
 
-    - name: Display SSL certificate expiry date
-      debug:
-        msg: "SSL certificate for {{ domain_name }} expires on {{ cert_end_date.stdout | trim | regex_replace('(notAfter=)','') }}"
+    - name: Get SSL certificate expiry date in CEST
+      set_fact:
+        cert_expiry_date_cest: "{{ (cert_end_date.stdout | trim | regex_replace('(notAfter=)','') | to_datetime('%b %d %H:%M:%S %Y %Z')).strftime('%Y-%m-%d %H:%M:%S') | to_datetime | timezone('Europe/Berlin') }}"
 
+    - name: Display SSL certificate expiry date in CEST
+      debug:
+        msg: "SSL certificate for {{ domain_name }} expires on {{ cert_expiry_date_cest }}"
