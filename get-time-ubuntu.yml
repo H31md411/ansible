@@ -1,0 +1,13 @@
+---
+- name: Get current timezone and time
+  hosts: ubuntu
+  gather_facts: yes
+
+  tasks:
+    - name: Get current timezone and time
+      command: date
+      register: date_output
+
+    - name: Display current timezone and time
+      debug:
+        msg: "Current timezone and time: {{ date_output.stdout }}"
