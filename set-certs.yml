@@ -1,0 +1,35 @@
+---
+- name: Check if web server is running and configure SSL
+  hosts: webserver
+  become: yes
+
+  vars:
+    webserver_process_name: "nginx"  # oder "apache2", je nachdem welchen Webserver Sie verwenden
+    certbot_package: "certbot-nginx"  # oder "certbot-nginx", je nachdem welchen Webserver Sie verwenden
+    certbot_plugin: "nginx"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
+    domain_name: "homelab.lan"  # Ihre Domain, für die das Zertifikat erstellt werden soll
+    email: "marcel@graewer.com"  # Ihre E-Mail-Adresse für Let's Encrypt-Benachrichtigungen
+    webserver_service_name: "nginx"  # oder "nginx", je nachdem welchen Webserver Sie verwenden
+
+  tasks:
+    - name: Check if the web server is running
+      shell: "ps aux | grep -v grep | grep '{{ webserver_process_name }}'"
+      register: webserver_status
+      ignore_errors: yes
+
+    - name: Install certbot package for the web server
+      apt:
+        name: "{{ certbot_package }}"
+        state: present
+      when: webserver_status.rc == 0
+
+    - name: Create Let's Encrypt SSL certificate
+      command: "certbot certonly --{{ certbot_plugin }} -d {{ domain_name }} --agree-tos --email {{ email }}"
+      ignore_errors: yes
+      when: webserver_status.rc == 0
+
+    - name: Reload the web server to apply the SSL certificate
+      systemd:
+        name: "{{ webserver_service_name }}"
+        state: restarted
+      when: webserver_status.rc == 0
