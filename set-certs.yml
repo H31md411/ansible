@@ -1,6 +1,6 @@
 ---
 - name: Generate and install self-signed SSL certificate for Nginx
-  hosts: your_nginx_server
+  hosts: webserver
   become: yes
 
   tasks:
