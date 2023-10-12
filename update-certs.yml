@@ -26,7 +26,8 @@
 
     - name: Calculate the Unix timestamp for SSL certificate expiry
       set_fact:
-        cert_expiry_time: "{{ cert_end_date.stdout | trim | to_datetime('%b %d %H:%M:%S %Y %Z') | to_unixtime }}"
+        cert_expiry_time: "{{ (cert_end_date.stdout | trim | to_datetime('%b %d %H:%M:%S %Y %Z')).strftime('%s') | int }}"
+
 
     - name: Renew SSL certificate if it's expiring soon
       command: "openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/{{ domain_name }}.key -out /etc/ssl/certs/{{ domain_name }}.crt -days 365 -nodes -subj '/CN={{ domain_name }}'"
