@@ -1,0 +1,47 @@
+---
+- name: Generate and install self-signed SSL certificate for Apache2
+  hosts: webserver
+  become: yes
+
+  vars:
+    domain: "homelab.lan"
+
+  tasks:
+    - name: Get the hostname of the server
+      setup:
+        filter: ansible_hostname
+      register: hostname
+
+    - name: Set the hostname as domain_name
+      set_fact:
+        domain_name: "{{ hostname.ansible_facts.ansible_hostname }}.{{ domain }}"
+
+    - name: Generate a self-signed SSL certificate
+      command: "openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/{{ domain_name }}.key -out /etc/ssl/certs/{{ domain_name }}.crt -days 365 -nodes -subj '/CN={{ domain_name }}'"
+
+    - name: Configure Apache2 to use the self-signed SSL certificate
+      blockinfile:
+        path: "/etc/apache2/sites-available/default-ssl.conf"  # Path to Apache2 SSL config
+        block: |
+          <VirtualHost _default_:443>
+              ServerAdmin webmaster@localhost
+              ServerName {{ domain_name }}
+              DocumentRoot /var/www/html
+
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+              SSLEngine on
+              SSLCertificateFile /etc/ssl/certs/{{ domain_name }}.crt
+              SSLCertificateKeyFile /etc/ssl/private/{{ domain_name }}.key
+
+              # ... Weitere SSL- und Serverkonfigurationen ...
+          </VirtualHost>
+
+    - name: Enable SSL module for Apache2
+      command: "a2enmod ssl"
+
+    - name: Reload Apache2 to apply the SSL configuration
+      systemd:
+        name: "apache2"  # service name for Apache2 service
+        state: restarted
