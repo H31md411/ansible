@@ -18,18 +18,3 @@
           - CriticalUpdates
         state: installed
       when: ansible_os_family == 'Windows'  # This task will only run on Windows systems
-
-
-
-#- hosts: ubuntu
-#  become: true
-#  tasks:
-#  - name: Update and upgrade apt packages
-#    apt:
-#      update_cache: yes
-#      upgrade: dist
-#      force_apt_get: yes
-# - name: check os version
-
-
-
