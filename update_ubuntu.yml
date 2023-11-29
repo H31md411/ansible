@@ -1,10 +1,10 @@
 ---
 - name: Update packages on Ubuntu and Windows
   hosts: all
-  become: true  # Run tasks with sudo or equivalent on Linux
-
+  
   tasks:
     - name: Update Ubuntu packages
+      become: true  # Run tasks with sudo or equivalent on Linux
       apt:
         update_cache: yes
         upgrade: yes
