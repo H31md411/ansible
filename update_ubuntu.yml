@@ -12,6 +12,8 @@
       
 - name: Update packages on Windows
   hosts: windows
+
+  tasks:
     - name: Update Windows packages
       win_updates:
         category_names:
