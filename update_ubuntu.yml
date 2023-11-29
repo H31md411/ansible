@@ -1,5 +1,4 @@
 ---
----
 - name: Update packages on Ubuntu and Windows
   hosts: all
   become: true  # Run tasks with sudo or equivalent on Linux
