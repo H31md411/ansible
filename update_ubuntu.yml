@@ -1,12 +1,35 @@
 ---
-- hosts: ubuntu
-  become: true
+---
+- name: Update packages on Ubuntu and Windows
+  hosts: all
+  become: true  # Run tasks with sudo or equivalent on Linux
+
   tasks:
-  - name: Update and upgrade apt packages
-    apt:
-      update_cache: yes
-      upgrade: dist
-      force_apt_get: yes
+    - name: Update Ubuntu packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+      when: ansible_os_family == 'Debian'  # This task will only run on Debian-based systems (like Ubuntu)
+
+    - name: Update Windows packages
+      win_updates:
+        category_names:
+          - SecurityUpdates
+          - UpdateRollups
+          - CriticalUpdates
+        state: installed
+      when: ansible_os_family == 'Windows'  # This task will only run on Windows systems
+
+
+
+#- hosts: ubuntu
+#  become: true
+#  tasks:
+#  - name: Update and upgrade apt packages
+#    apt:
+#      update_cache: yes
+#      upgrade: dist
+#      force_apt_get: yes
 # - name: check os version
 
 
