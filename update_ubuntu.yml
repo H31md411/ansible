@@ -1,6 +1,6 @@
 ---
-- name: Update packages on Ubuntu and Windows
-  hosts: all
+- name: Update packages on Ubuntu
+  hosts: ubuntu
   become: true  # Run tasks with sudo or equivalent on Linux
   
   tasks:
@@ -9,7 +9,9 @@
         update_cache: yes
         upgrade: yes
       when: ansible_os_family == 'Debian'  # This task will only run on Debian-based systems (like Ubuntu)
-
+      
+- name: Update packages on Windows
+  hosts: windows
     - name: Update Windows packages
       win_updates:
         category_names:
