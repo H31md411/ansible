@@ -1,0 +1,25 @@
+- name: Installiere Telegraf
+  hosts: all
+  become: yes
+  tasks:
+    - name: Füge InfluxDB Repository hinzu (nur für Ubuntu)
+      apt_repository:
+        repo: 'deb https://repos.influxdata.com/ubuntu focal stable'
+        state: present
+        update_cache: yes
+
+    - name: Importiere GPG-Key für das Repository
+      apt_key:
+        url: 'https://repos.influxdata.com/influxdb.key'
+        state: present
+
+    - name: Installiere Telegraf
+      apt:
+        name: telegraf
+        state: present
+
+    - name: Konfiguriere Telegraf
+      template:
+        src: telegraf.conf.j2  # Hier fügst du deine Telegraf-Konfiguration ein
+        dest: /etc/telegraf/telegraf.conf
+      notify: Restart Telegraf
