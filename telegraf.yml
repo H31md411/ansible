@@ -4,7 +4,7 @@
   tasks:
     - name: Füge InfluxDB Repository hinzu (nur für Ubuntu)
       apt_repository:
-        repo: 'deb https://repos.influxdata.com/ubuntu focal stable'
+        repo: 'deb https://repos.influxdata.com/ubuntu jammy stable'
         state: present
         update_cache: yes
 
