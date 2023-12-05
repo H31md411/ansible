@@ -23,3 +23,9 @@
         src: /home/heimdall/ansible_files/telegraf.conf.j2  # Hier fügst du deine Telegraf-Konfiguration ein
         dest: /etc/telegraf/telegraf.conf
       notify: Restart Telegraf
+      
+   handlers:
+    - name: Restart Telegraf
+      service:
+        name: telegraf
+        state: restarted
