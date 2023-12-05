@@ -24,7 +24,7 @@
         dest: /etc/telegraf/telegraf.conf
       notify: Restart Telegraf
       
-   handlers:
+  handlers:
     - name: Restart Telegraf
       service:
         name: telegraf
