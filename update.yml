@@ -1,19 +1,19 @@
 ---
-- name: Update packages on Ubuntu
-  hosts: ubuntu
+- name: Update packages on Ubuntu, Windows, and FreeBSD
+  hosts: all
   become: true  # Run tasks with sudo or equivalent on Linux
-  
+
   tasks:
     - name: Update Ubuntu packages
       apt:
         update_cache: yes
         upgrade: yes
       when: ansible_os_family == 'Debian'  # This task will only run on Debian-based systems (like Ubuntu)
-      
-- name: Update packages on Windows
-  hosts: windows
 
-  tasks:
+    - name: Update FreeBSD packages
+      command: pkg update && pkg upgrade -y
+      when: ansible_os_family == 'FreeBSD'  # This task will only run on FreeBSD systems
+
     - name: Update Windows packages
       win_updates:
         category_names:
@@ -22,3 +22,4 @@
           - CriticalUpdates
         state: installed
       when: ansible_os_family == 'Windows'  # This task will only run on Windows systems
+
