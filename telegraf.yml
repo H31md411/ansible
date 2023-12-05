@@ -10,7 +10,7 @@
 
     - name: Importiere GPG-Key für das Repository
       apt_key:
-        url: 'https://repos.influxdata.com/influxdb.key'
+        url: 'https://repos.influxdata.com/influxdata-archive.key'
         state: present
 
     - name: Installiere Telegraf
@@ -20,7 +20,7 @@
 
     - name: Konfiguriere Telegraf
       template:
-        src: /home/heimdall/ansible_files/telegraf.conf.j2  # Hier fügst du deine Telegraf-Konfiguration ein
+        src: /home/heimdall/ansible_files/telegraf.conf.j2
         dest: /etc/telegraf/telegraf.conf
       notify: Restart Telegraf
       
