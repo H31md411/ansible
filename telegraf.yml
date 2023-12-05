@@ -20,6 +20,6 @@
 
     - name: Konfiguriere Telegraf
       template:
-        src: telegraf.conf.j2  # Hier fügst du deine Telegraf-Konfiguration ein
+        src: /etc/ansible/playbooks/telegraf.conf.j2  # Hier fügst du deine Telegraf-Konfiguration ein
         dest: /etc/telegraf/telegraf.conf
       notify: Restart Telegraf
