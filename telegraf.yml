@@ -1,5 +1,5 @@
 - name: Installiere Telegraf
-  hosts: ubuntu,windows
+  hosts: ubuntu
   become: yes
   tasks:
     - name: Füge InfluxDB Repository hinzu (nur für Ubuntu)
