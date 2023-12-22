@@ -1,13 +1,14 @@
 ---
 - name: Update packages on Ubuntu, Windows, and FreeBSD
   hosts: all
+  gather_facts: yes
   become: true  # Run tasks with sudo or equivalent on Linux
 
   tasks:
     - name: Update Ubuntu packages
       apt:
         update_cache: yes
-        upgrade: yes
+        upgrade: dist
         state: latest
       when: ansible_os_family == 'Debian'  # This task will only run on Debian-based systems (like Ubuntu)
 
