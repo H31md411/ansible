@@ -6,4 +6,6 @@
   tasks:
     - name: Print os version
       command: lsb_release -d
+      register: version_output
       when: ansible_os_family == 'Debian'  # This task will only run on debian based systems
+      
