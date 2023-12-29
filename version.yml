@@ -1,11 +1,14 @@
 ---
-- name: Print version of linux server
+- name: Show version of linux server
   hosts: all
   gather_facts: yes
 
   tasks:
-    - name: Print os version
+    - name: search os version
       command: lsb_release -d
       register: version_output
-      when: ansible_os_family == 'Debian'  # This task will only run on debian based systems
-      
+      when: ansible_os_family == 'Debian'
+
+    - name: print current os version
+      debug:
+      msg: "Current os version: {{ version_output.stdout }}"
