@@ -1,0 +1,9 @@
+---
+- name: Print version of linux server
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Print os version
+      command: lsb_release -d
+      when: ansible_os_family == 'Debian'  # This task will only run on debian based systems
